@@ -1,0 +1,60 @@
+schema_version: 1
+
+context:
+  name: scanpdf
+  version: "0.3.1"
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/scanpdf-${{ version }}.tar.gz
+  sha256: 2f7d64d4a9ea0bffbe0946bc03011d2305904e74658f4987723eaac08bd1bf20
+  patches:
+    - python3.patch
+
+build:
+  number: 2
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv
+  python:
+    entry_points:
+      - scanpdf = scanpdf.scanpdf:main
+
+requirements:
+  host:
+    - pip
+    - python ${{ python_min }}.*
+    - setuptools
+  run:
+    - docopt >=0.6.1
+    - python >=${{ python_min }}
+    - imagemagick
+    - ghostscript
+    - sane
+    - identify
+
+tests:
+  - python:
+      imports:
+        - scanpdf
+      pip_check: true
+      python_version: ${{ python_min }}
+  - requirements:
+      run:
+        - pip
+        - python ${{ python_min }}.*
+    script:
+      - scanpdf --help
+
+about:
+  summary: Utility to use SANE/scanadf to scan to PDF
+  license: Apache-2.0
+  license_file:
+    - LICENSE.txt
+  homepage: https://github.com/virantha/scanpdf
+
+extra:
+  recipe-maintainers:
+    - jan-janssen
